@@ -21,6 +21,36 @@ namespace KraevedAPI.DAL
             }
         }
 
+        private GenericRepository<HistoricalEvent>? historicalEventsRepository;
+
+        public GenericRepository<HistoricalEvent> HistoricalEventsRepository
+        {
+            get
+            {
+
+                if (this.historicalEventsRepository == null)
+                {
+                    this.historicalEventsRepository = new GenericRepository<HistoricalEvent>(context);
+                }
+                return historicalEventsRepository;
+            }
+        }
+
+        private GenericRepository<ImageObject>? imageObjectsRepository;
+
+        public GenericRepository<ImageObject> ImageObjectsRepository
+        {
+            get
+            {
+
+                if (this.imageObjectsRepository == null)
+                {
+                    this.imageObjectsRepository = new GenericRepository<ImageObject>(context);
+                }
+                return imageObjectsRepository;
+            }
+        }
+
         public UnitOfWork(KraevedContext context)
         {
             this.context = context;

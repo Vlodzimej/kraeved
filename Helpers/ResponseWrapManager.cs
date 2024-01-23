@@ -22,12 +22,12 @@ namespace KraevedAPI.Helpers
         {
             var requestUrl = context.Request.GetDisplayUrl();
             var data = result;
-            var error = exception != null ? ServiceConstants.ExceptionWrapperMessage : null;
-            var status = result != null;
+            //var error = exception != null ? ServiceConstants.ExceptionWrapperMessage : null;
+            //var status = result != null;
             var httpStatusCode = (HttpStatusCode)context.Response.StatusCode;
 
             // NOTE: Add any further customizations if needed here
-            return new KraevedResponse(requestUrl, data, error, status, httpStatusCode);
+            return new KraevedResponse(requestUrl, data, httpStatusCode);
         }
     }
 }

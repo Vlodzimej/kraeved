@@ -5,9 +5,11 @@ using KraevedAPI.DAL;
 using KraevedAPI.Helpers;
 using KraevedAPI.Service;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+
+//CultureInfo.CurrentCulture = new CultureInfo("ru-RU", false);
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 // Add services to the container.
 builder.Services.AddControllers(options =>

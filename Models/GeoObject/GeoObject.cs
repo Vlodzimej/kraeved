@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace KraevedAPI.Models
+﻿namespace KraevedAPI.Models
 {
     /// <summary>
     /// Географический объект

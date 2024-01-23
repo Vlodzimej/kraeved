@@ -14,5 +14,7 @@ namespace KraevedAPI.DAL
         }
 
         public DbSet<GeoObject> GeoObjects => Set<GeoObject>();
+        public DbSet<HistoricalEvent> HistoricalEvents => Set<HistoricalEvent>();
+        public DbSet<ImageObject> ImageObjects => Set<ImageObject>();
     }
 }

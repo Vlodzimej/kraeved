@@ -7,12 +7,12 @@ namespace KraevedAPI.ClassObjects
     [Serializable]
     public class KraevedResponse
     {
-        public KraevedResponse(string requestUrl, object? data, string? error, bool status = false, HttpStatusCode httpStatusCode = HttpStatusCode.InternalServerError)
+        public KraevedResponse(string requestUrl, object? data, HttpStatusCode httpStatusCode = HttpStatusCode.InternalServerError)
         {
             this.requestUrl = requestUrl;
             this.data = data;
-            this.error = error;
-            this.status = status;
+            //this.error = error;
+            // this.status = status;
             this.statusCode = httpStatusCode;
         }
         /// <summary>
@@ -28,12 +28,12 @@ namespace KraevedAPI.ClassObjects
         /// <summary>
         /// The Response Error
         /// </summary>
-        public string? error { get; set; }
+        //public string? error { get; set; }
 
         /// <summary>
         /// The Response Status
         /// </summary>
-        public bool status { get; set; }
+        //public bool status { get; set; }
 
         /// <summary>
         /// The Response Http Status Code

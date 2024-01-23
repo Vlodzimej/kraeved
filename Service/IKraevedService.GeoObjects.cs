@@ -5,20 +5,10 @@ namespace KraevedAPI.Service
 {
     public partial interface IKraevedService
     {
-#pragma warning disable IDE1006 // Стили именования
-        Task<GeoObject?> getGeoObjectById(int id);
-#pragma warning restore IDE1006 // Стили именования
-#pragma warning disable IDE1006 // Стили именования
-        Task<IEnumerable<GeoObjectBrief>> getGeoObjectsByFilter(GeoObjectFilter filter);
-#pragma warning restore IDE1006 // Стили именования
-#pragma warning disable IDE1006 // Стили именования
-        Task<GeoObject?> insertGeoObject(GeoObject geoObject);
-#pragma warning restore IDE1006 // Стили именования
-#pragma warning disable IDE1006 // Стили именования
-        Task<GeoObject?> deleteGeoObject(int id);
-#pragma warning restore IDE1006 // Стили именования
-#pragma warning disable IDE1006 // Стили именования
-        Task<GeoObject?> updateGeoObject(GeoObject geoObject);
-#pragma warning restore IDE1006 // Стили именования
+        Task<GeoObject> GetGeoObjectById(int id);
+        Task<IEnumerable<GeoObjectBrief>> GetGeoObjectsByFilter(GeoObjectFilter filter);
+        Task<GeoObject> InsertGeoObject(GeoObject geoObject);
+        Task<GeoObject> DeleteGeoObject(int id);
+        Task<GeoObject> UpdateGeoObject(GeoObject geoObject);
     }
 }

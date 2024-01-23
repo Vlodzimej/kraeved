@@ -5,6 +5,12 @@
     /// </summary>
     public static class ServiceConstants
     {
-        public const string ExceptionWrapperMessage = "Some Exception Handling Wrapper";
+        public static class Exception {
+            public const string NotFound = "Not found";
+            public const string CreatedObjectNotFound = "Created object not found";
+            public const string UnknownError = "Unknown error";
+            public const string ObjectEqualsNull = "Object equals null";
+            public const string ObjectExists = "Object exists";
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using KraevedAPI.Models;
+﻿using KraevedAPI.Constants;
+using KraevedAPI.Models;
 
 namespace KraevedAPI.Service
 {
@@ -9,11 +10,11 @@ namespace KraevedAPI.Service
         /// </summary>
         /// <param name="id">Идентификатор гео-объекта</param>
         /// <returns></returns>
-        public async Task<GeoObject?> getGeoObjectById(int id)
+        public Task<GeoObject> GetGeoObjectById(int id)
         {
-            var geoObject = _unitOfWork.GeoObjectsRepository.GetByID(id);
+            var result = _unitOfWork.GeoObjectsRepository.GetByID(id) ?? throw new Exception(ServiceConstants.Exception.NotFound);
 
-            return geoObject;
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -21,16 +22,17 @@ namespace KraevedAPI.Service
         /// </summary>
         /// <param name="filter">Фильтр гео-объекта</param>
         /// <returns></returns>
-        public async Task<IEnumerable<GeoObjectBrief>> getGeoObjectsByFilter(GeoObjectFilter filter)
+        public Task<IEnumerable<GeoObjectBrief>> GetGeoObjectsByFilter(GeoObjectFilter filter)
         {
             //TODO: Поправить поиск по имени с приведением в нижний регистр
-            var geoObjects = _unitOfWork.GeoObjectsRepository
-                .Get(x => (filter.Name != null ? x.Name.ToLower().Contains(filter.Name.ToLower()) : true) &&
-                          (filter.RegionId != null ? (filter.RegionId == x.RegionId) : true), 
-                     x => x.OrderBy(item => item.Name))
-                .Select(geoObject => _mapper.Map<GeoObjectBrief>(geoObject));
+            var result = _unitOfWork.GeoObjectsRepository
+                .Get(x => 
+                    (filter.Name == null || x.Name.ToLower().Contains(filter.Name.ToLower())) && 
+                    (filter.RegionId == null || (filter.RegionId == x.RegionId)),                         
+                    x => x.OrderBy(item => item.Name))
+                .Select(_mapper.Map<GeoObjectBrief>) ?? throw new Exception(ServiceConstants.Exception.UnknownError);
 
-            return geoObjects;
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -38,8 +40,14 @@ namespace KraevedAPI.Service
         /// </summary>
         /// <param name="geoObject"></param>
         /// <returns></returns>
-        public async Task<GeoObject?> insertGeoObject(GeoObject geoObject)
+        public async Task<GeoObject> InsertGeoObject(GeoObject geoObject)
         {
+            var filter = new GeoObjectFilter() { Name = geoObject.Name, RegionId = geoObject.RegionId };
+            var existedGeoObjectList = await GetGeoObjectsByFilter(filter);
+            if (existedGeoObjectList.FirstOrDefault() != null) {
+                throw new Exception(ServiceConstants.Exception.ObjectExists);
+            }
+     
             _unitOfWork.GeoObjectsRepository.Insert(geoObject);
             await _unitOfWork.SaveAsync();
 
@@ -49,7 +57,7 @@ namespace KraevedAPI.Service
                     (x.Latitude == geoObject.Latitude) && 
                     (x.Longitude == geoObject.Longitude) && 
                     (x.Description == geoObject.Description))
-                .FirstOrDefault();
+                .FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.CreatedObjectNotFound);
 
             return newGeoObject;
         }
@@ -59,19 +67,14 @@ namespace KraevedAPI.Service
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<GeoObject?> deleteGeoObject(int id)
+        public async Task<GeoObject> DeleteGeoObject(int id)
         {
-            var geoObject = _unitOfWork.GeoObjectsRepository.Get(x => (id == x.Id)).FirstOrDefault();
+            var geoObject = _unitOfWork.GeoObjectsRepository.Get(x => id == x.Id).FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.NotFound);
 
-            if (geoObject != null)
-            {
-                _unitOfWork.GeoObjectsRepository.Delete(id);
-                await _unitOfWork.SaveAsync();
+            _unitOfWork.GeoObjectsRepository.Delete(id);
+            await _unitOfWork.SaveAsync();
 
-                return geoObject;
-            }
-
-            return null;
+            return geoObject;
         }
 
         /// <summary>
@@ -79,50 +82,44 @@ namespace KraevedAPI.Service
         /// </summary>
         /// <param name="geoObject"></param>
         /// <returns></returns>
-        public async Task<GeoObject?> updateGeoObject(GeoObject geoObject)
+        public async Task<GeoObject> UpdateGeoObject(GeoObject geoObject)
         {
-            var oldGeoObject = _unitOfWork.GeoObjectsRepository.Get(x => (geoObject.Id == x.Id)).FirstOrDefault();
-
-            if (oldGeoObject != null)
-            {
-                var updatedGeoObject = oldGeoObject;
-                // Изменения названия
-                if (geoObject.Name.Count() > 0 && geoObject.Name != oldGeoObject.Name)
-                {
-                    updatedGeoObject.Name = geoObject.Name;
-                }
-
-                // Изменение описание
-                if (geoObject.Description.Count() > 0 && geoObject.Description != oldGeoObject.Description)
-                {
-                    updatedGeoObject.Description = geoObject.Description;
-                }
-
-                // Изменение долготы
-                if (geoObject.Longitude != null && geoObject.Longitude != oldGeoObject.Longitude)
-                {
-                    updatedGeoObject.Longitude = geoObject.Longitude;
-                }
-
-                // Изменение широты
-                if (geoObject.Latitude != null && geoObject.Latitude != oldGeoObject.Latitude)
-                {
-                    updatedGeoObject.Latitude = geoObject.Latitude;
-                }
-
-                // Изменение региона
-                if (geoObject.RegionId != null && geoObject.RegionId != oldGeoObject.RegionId)
-                {
-                    updatedGeoObject.RegionId = geoObject.RegionId;
-                }
-
-                _unitOfWork.GeoObjectsRepository.Update(updatedGeoObject);
-                await _unitOfWork.SaveAsync();
-
-                return updatedGeoObject;
+            var oldGeoObject = _unitOfWork.GeoObjectsRepository.Get(x => geoObject.Id == x.Id).FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.NotFound);
+            var updatedGeoObject = oldGeoObject;
+            // Изменения названия
+            if (geoObject.Name.Count() > 0 && geoObject.Name != oldGeoObject.Name)
+            {                    
+                updatedGeoObject.Name = geoObject.Name;
             }
 
-            return null;
+            // Изменение описание
+            if (geoObject.Description.Count() > 0 && geoObject.Description != oldGeoObject.Description)
+            {
+                updatedGeoObject.Description = geoObject.Description;
+            }
+
+            // Изменение долготы
+            if (geoObject.Longitude != null && geoObject.Longitude != oldGeoObject.Longitude)
+            {
+                updatedGeoObject.Longitude = geoObject.Longitude;
+            }
+
+            // Изменение широты
+            if (geoObject.Latitude != null && geoObject.Latitude != oldGeoObject.Latitude)
+            {
+                updatedGeoObject.Latitude = geoObject.Latitude;
+            }
+
+            // Изменение региона
+            if (geoObject.RegionId != null && geoObject.RegionId != oldGeoObject.RegionId)
+            {
+                updatedGeoObject.RegionId = geoObject.RegionId;
+            }
+
+            _unitOfWork.GeoObjectsRepository.Update(updatedGeoObject);
+            await _unitOfWork.SaveAsync();
+
+            return updatedGeoObject;
         }
     }
 }

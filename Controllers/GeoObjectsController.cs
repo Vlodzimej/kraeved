@@ -24,12 +24,14 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<GeoObject>> GetGeoObjectById(int id)
+        public async Task<ActionResult<GeoObject?>> GetGeoObjectById(int id)
         {
-            var result = await _kraevedService.getGeoObjectById(id);
-
-            if(result == null) {
-                return BadRequest();
+            GeoObject? result = null;
+            try {
+                result = await _kraevedService.GetGeoObjectById(id);
+            }
+            catch(Exception ex) {
+                return BadRequest(new { ex.Message });
             }
 
             return Ok(result);
@@ -44,16 +46,18 @@ namespace KraevedAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GeoObjectBrief>>> GetGeoObjects([FromQuery] string? name, [FromQuery] int? regionId) 
         {
+            IEnumerable<GeoObjectBrief>? result;
             var filter = new GeoObjectFilter() { Name = name, RegionId = regionId };
-            var result = await _kraevedService.getGeoObjectsByFilter(filter);
-            string? errorMessage = null;
 
-            if (result == null) 
-            {
-                errorMessage = "Ошибка поиска";
+            try {
+                result = await _kraevedService.GetGeoObjectsByFilter(filter);
             }
 
-            return errorMessage != null ? BadRequest(new { errorMessage }) : Ok(result);
+            catch(Exception ex) {
+                return BadRequest(new { ex.Message });
+            }
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -64,11 +68,14 @@ namespace KraevedAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> InsertGeoObject(GeoObject geoObject)
         {
-            var result = await _kraevedService.insertGeoObject(geoObject);
+            GeoObject? result = null;
 
-            if (result == null)
-            {
-                return BadRequest(new { message = "Объект не создан" });
+            try {
+                result = await _kraevedService.InsertGeoObject(geoObject);
+            }
+
+            catch(Exception ex) {
+                return BadRequest(new { ex.Message });
             }
 
             return Ok(result);
@@ -82,10 +89,14 @@ namespace KraevedAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteGeoObject(int id)
         {
-            var result = await _kraevedService.deleteGeoObject(id);
+            GeoObject? result = null;
 
-            if(result == null) {
-                return BadRequest(new { message = "Объект не найден" });
+            try {
+                result = await _kraevedService.DeleteGeoObject(id);
+            }
+
+            catch(Exception ex) {
+                return BadRequest(new { ex.Message });
             }
 
             return Ok(result);
@@ -94,11 +105,13 @@ namespace KraevedAPI.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateGeoObject([FromBody]GeoObject geoObject)
         {
-            var result = await _kraevedService.updateGeoObject(geoObject);
+            GeoObject? result = null;
 
-            if (result == null)
-            {
-                return BadRequest(new { message = "Объект не найден" });
+            try {
+                result = await _kraevedService.UpdateGeoObject(geoObject);
+            }
+            catch(Exception ex) {
+                return BadRequest(new { ex.Message });
             }
 
             return Ok(result);
