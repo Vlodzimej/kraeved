@@ -21,8 +21,8 @@ namespace KraevedAPI.Models
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Иконка
+        /// Миниатюрное изображение
         /// </summary>
-        public string ImageId { get; set; } = string.Empty;
+        public string ThumbnailUrl { get; set; } = string.Empty;
     }
 }

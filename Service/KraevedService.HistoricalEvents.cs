@@ -73,35 +73,18 @@ namespace KraevedAPI.Service
         /// <param name="historicalEvent">Историческое событие</param>
         /// <returns></returns>
         public async Task<HistoricalEvent> UpdateHistoricalEvent(HistoricalEvent historicalEvent) {
-            var existedHistoricalObject = _unitOfWork.HistoricalEventsRepository.Get(x => historicalEvent.Id == x.Id).FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.NotFound); 
+            var existingHistoricalObject = _unitOfWork.HistoricalEventsRepository.Get(x => historicalEvent.Id == x.Id).FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.NotFound); 
             Validate(historicalEvent);
 
-            // Изменения названия
-            if (historicalEvent.Name != existedHistoricalObject.Name)
-            {
-                existedHistoricalObject.Name = historicalEvent.Name;
-            }
-
-            if (historicalEvent.Date != existedHistoricalObject.Date)
-            {
-                existedHistoricalObject.Date = historicalEvent.Date;
-            }
-
-            if (historicalEvent.Description != existedHistoricalObject.Description)
-            {
-                existedHistoricalObject.Description = historicalEvent.Description;
-            }
-
-            if (historicalEvent.Images != existedHistoricalObject.Images)
-            {
-                existedHistoricalObject.Images = historicalEvent.Images;
-            }
-            
-
-            _unitOfWork.HistoricalEventsRepository.Update(existedHistoricalObject);
+            existingHistoricalObject.Name = historicalEvent.Name;
+            existingHistoricalObject.Date = historicalEvent.Date;
+            existingHistoricalObject.Description = historicalEvent.Description;
+            existingHistoricalObject.ImageUrls = historicalEvent.ImageUrls;
+            existingHistoricalObject.ThumbnailUrl = historicalEvent.ThumbnailUrl;
+            _unitOfWork.HistoricalEventsRepository.Update(existingHistoricalObject);
             await _unitOfWork.SaveAsync();
 
-            return existedHistoricalObject;
+            return existingHistoricalObject;
         }
 
         /// <summary>
@@ -113,21 +96,20 @@ namespace KraevedAPI.Service
                 throw new Exception(ServiceConstants.Exception.ObjectEqualsNull);
             }
 
-            string[] errorMessages = [];
+            List<string> errorMessages = [];
 
             var nameLenght = historicalEvent.Name.Trim().Length;
 
             if (nameLenght == 0) {
-                errorMessages.Append("Не заполнено название");
+                errorMessages.Add("Не заполнено название");
             }
 
             if (nameLenght > 100) {
-                errorMessages.Append("Название не должно превышать 100 символов");
+                errorMessages.Add("Название не должно превышать 100 символов");
             }
 
             //TODO: Сделать полную валидацию
-
-            if (errorMessages.Length > 0) {
+            if (errorMessages.Count() > 0) {
                 throw new Exception(string.Join("\n", errorMessages));
             }
         }

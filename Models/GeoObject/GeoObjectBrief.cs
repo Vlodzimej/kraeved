@@ -23,14 +23,9 @@ namespace KraevedAPI.Models
         public string ShortDescription { get; set; } = string.Empty;
 
         /// <summary>
-        /// Широта
+        /// Миниатюрное изображение
         /// </summary>
-        /// 
-        public double Latitude { get; set; }
-
-        /// <summary>
-        /// Долгота
-        /// </summary>
-        public double Longitude { get; set; }
+        /// <value></value>
+        public string? ThumbnailUrl { get; set; } 
     }
 }

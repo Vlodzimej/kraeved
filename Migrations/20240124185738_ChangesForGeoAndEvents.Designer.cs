@@ -3,6 +3,7 @@ using System;
 using KraevedAPI.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KraevedAPI.Migrations
 {
     [DbContext(typeof(KraevedContext))]
-    partial class KraevedContextModelSnapshot : ModelSnapshot
+    [Migration("20240124185738_ChangesForGeoAndEvents")]
+    partial class ChangesForGeoAndEvents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -54,7 +57,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GeoObjects", (string)null);
+                    b.ToTable("GeoObjects");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.HistoricalEvent", b =>
@@ -78,16 +81,13 @@ namespace KraevedAPI.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("RegionId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("ThumbnailUrl")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("HistoricalEvents", (string)null);
+                    b.ToTable("HistoricalEvents");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.ImageObject", b =>
@@ -107,7 +107,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ImageObjects", (string)null);
+                    b.ToTable("ImageObjects");
                 });
 #pragma warning restore 612, 618
         }

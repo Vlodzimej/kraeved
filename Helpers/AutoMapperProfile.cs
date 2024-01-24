@@ -8,6 +8,7 @@ namespace KraevedAPI.Helpers
         public AutoMapperProfile()
         {
             CreateMap<GeoObject, GeoObjectBrief>();
+            CreateMap<HistoricalEvent, HistoricalEventBrief>();
         }
     }
 }

@@ -26,14 +26,25 @@ namespace KraevedAPI.Models
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
+        /// Идентификатор региона
+        /// </summary>
+        public int? RegionId { get; set; }
+
+        /// <summary>
         /// Дата
         /// </summary>
         public DateTime? Date { get; set; }      
 
         /// <summary>
-        /// Галлерея
+        /// Список изображений
         /// </summary>
         /// <value></value>
-        public ICollection<ImageObject> Images { get; set; } = [];
+        public List<string> ImageUrls { get; set; } = [];
+
+        /// <summary>
+        /// Миниатюрное изображение
+        /// </summary>
+        /// <value></value>
+        public string ThumbnailUrl { get; set; } = string.Empty;
     }
 }

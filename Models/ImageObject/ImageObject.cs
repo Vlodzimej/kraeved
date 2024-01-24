@@ -15,17 +15,17 @@ namespace KraevedAPI.Models
         /// <summary>
         /// Название изображения
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Ссылка на картинку
         /// </summary>
-        public ImageObject? icon { get; set; }
+        public string? Url { get; set; }
 
         /// <summary>
         /// Данные
         /// </summary>
 
-        public byte[] Content { get; set; } = [];
+        public byte[]? Data { get; set; } = null;
     }
 }

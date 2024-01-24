@@ -1,10 +1,6 @@
-﻿using KraevedAPI.ClassObjects;
-using KraevedAPI.Core;
-using KraevedAPI.Models;
+﻿using KraevedAPI.Models;
 using KraevedAPI.Service;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace KraevedAPI.Controllers
 {
@@ -38,7 +34,7 @@ namespace KraevedAPI.Controllers
         }
 
         /// <summary>
-        /// Получить список гео-объектов по фильру
+        /// Получить список гео-объектов по фильтру
         /// </summary>
         /// <param name="name"></param>
         /// <param name="regionId"></param>
@@ -102,6 +98,11 @@ namespace KraevedAPI.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Изменить гео-объект
+        /// </summary>
+        /// <param name="geoObject"></param>
+        /// <returns></returns>
         [HttpPut]
         public async Task<ActionResult> UpdateGeoObject([FromBody]GeoObject geoObject)
         {

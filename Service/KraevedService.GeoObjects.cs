@@ -12,7 +12,8 @@ namespace KraevedAPI.Service
         /// <returns></returns>
         public Task<GeoObject> GetGeoObjectById(int id)
         {
-            var result = _unitOfWork.GeoObjectsRepository.GetByID(id) ?? throw new Exception(ServiceConstants.Exception.NotFound);
+            var result = _unitOfWork.GeoObjectsRepository.GetByID(id) ?? 
+                throw new Exception(ServiceConstants.Exception.NotFound);
 
             return Task.FromResult(result);
         }
@@ -42,6 +43,7 @@ namespace KraevedAPI.Service
         /// <returns></returns>
         public async Task<GeoObject> InsertGeoObject(GeoObject geoObject)
         {
+            Validate(geoObject);
             var filter = new GeoObjectFilter() { Name = geoObject.Name, RegionId = geoObject.RegionId };
             var existedGeoObjectList = await GetGeoObjectsByFilter(filter);
             if (existedGeoObjectList.FirstOrDefault() != null) {
@@ -69,7 +71,8 @@ namespace KraevedAPI.Service
         /// <returns></returns>
         public async Task<GeoObject> DeleteGeoObject(int id)
         {
-            var geoObject = _unitOfWork.GeoObjectsRepository.Get(x => id == x.Id).FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.NotFound);
+            var geoObject = _unitOfWork.GeoObjectsRepository.Get(x => id == x.Id).FirstOrDefault() ??
+                throw new Exception(ServiceConstants.Exception.NotFound);
 
             _unitOfWork.GeoObjectsRepository.Delete(id);
             await _unitOfWork.SaveAsync();
@@ -84,42 +87,48 @@ namespace KraevedAPI.Service
         /// <returns></returns>
         public async Task<GeoObject> UpdateGeoObject(GeoObject geoObject)
         {
-            var oldGeoObject = _unitOfWork.GeoObjectsRepository.Get(x => geoObject.Id == x.Id).FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.NotFound);
-            var updatedGeoObject = oldGeoObject;
-            // Изменения названия
-            if (geoObject.Name.Count() > 0 && geoObject.Name != oldGeoObject.Name)
-            {                    
-                updatedGeoObject.Name = geoObject.Name;
-            }
+            var existingGeoObject = _unitOfWork.GeoObjectsRepository.Get(x => geoObject.Id == x.Id).FirstOrDefault() ?? 
+                throw new Exception(ServiceConstants.Exception.NotFound);
+            Validate(existingGeoObject);
 
-            // Изменение описание
-            if (geoObject.Description.Count() > 0 && geoObject.Description != oldGeoObject.Description)
-            {
-                updatedGeoObject.Description = geoObject.Description;
-            }
+            existingGeoObject.Name = geoObject.Name;
+            existingGeoObject.Description = geoObject.Description;
+            existingGeoObject.Longitude = geoObject.Longitude;
+            existingGeoObject.Latitude = geoObject.Latitude;                
+            existingGeoObject.RegionId = geoObject.RegionId;
 
-            // Изменение долготы
-            if (geoObject.Longitude != null && geoObject.Longitude != oldGeoObject.Longitude)
-            {
-                updatedGeoObject.Longitude = geoObject.Longitude;
-            }
-
-            // Изменение широты
-            if (geoObject.Latitude != null && geoObject.Latitude != oldGeoObject.Latitude)
-            {
-                updatedGeoObject.Latitude = geoObject.Latitude;
-            }
-
-            // Изменение региона
-            if (geoObject.RegionId != null && geoObject.RegionId != oldGeoObject.RegionId)
-            {
-                updatedGeoObject.RegionId = geoObject.RegionId;
-            }
-
-            _unitOfWork.GeoObjectsRepository.Update(updatedGeoObject);
+            _unitOfWork.GeoObjectsRepository.Update(existingGeoObject);
             await _unitOfWork.SaveAsync();
 
-            return updatedGeoObject;
+            return existingGeoObject;
+        }
+
+        /// <summary>
+        /// Валидация объекта исторического события
+        /// </summary>
+        /// <param name="historicalEvent"></param>
+        private void Validate(GeoObject? geoObject) {
+            if (geoObject == null) {
+                throw new Exception(ServiceConstants.Exception.ObjectEqualsNull);
+            }
+
+            string[] errorMessages = [];
+
+            var nameLenght = geoObject.Name.Trim().Length;
+
+            if (nameLenght == 0) {
+                errorMessages.Append("Не заполнено название");
+            }
+
+            if (nameLenght > 100) {
+                errorMessages.Append("Название не должно превышать 100 символов");
+            }
+
+            //TODO: Сделать полную валидацию
+
+            if (errorMessages.Length > 0) {
+                throw new Exception(string.Join("\n", errorMessages));
+            }
         }
     }
 }
