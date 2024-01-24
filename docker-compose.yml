@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  kraevedapi:
+    image: ${DOCKER_REGISTRY-}kraevedapi
+    build:
+      context: .
+      dockerfile: KraevedAPI/Dockerfile
