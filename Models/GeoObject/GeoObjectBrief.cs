@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace KraevedAPI.Models
+﻿namespace KraevedAPI.Models
 {
     /// <summary>
     /// Географический объект сокращенный
@@ -10,7 +8,7 @@ namespace KraevedAPI.Models
         /// <summary>
         /// Идентификатор
         /// </summary>
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         /// <summary>
         /// Название
@@ -21,6 +19,24 @@ namespace KraevedAPI.Models
         /// Короткое описание
         /// </summary>
         public string ShortDescription { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Тип локации
+        /// </summary> <summary>
+        /// 
+        /// </summary>
+        /// <value></value>
+        public GeoObjectType? Type { get; set; }
+
+        /// <summary>
+        /// Широта
+        /// </summary> 
+        public double? Latitude { get; set; }
+
+        /// <summary>
+        /// Долгота
+        /// </summary>
+        public double? Longitude { get; set; }
 
         /// <summary>
         /// Миниатюрное изображение

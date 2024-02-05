@@ -12,7 +12,6 @@ namespace KraevedAPI.DAL
         {
             get
             {
-
                 if (this.geoObjectsRepository == null)
                 {
                     this.geoObjectsRepository = new GenericRepository<GeoObject>(context);
@@ -27,12 +26,25 @@ namespace KraevedAPI.DAL
         {
             get
             {
-
                 if (this.historicalEventsRepository == null)
                 {
                     this.historicalEventsRepository = new GenericRepository<HistoricalEvent>(context);
                 }
                 return historicalEventsRepository;
+            }
+        }
+
+        private GenericRepository<GeoObjectType>? geoObjectTypesRepository;
+
+        public GenericRepository<GeoObjectType> GeoObjectTypesRepository
+        {
+            get
+            {
+                if (this.geoObjectTypesRepository == null)
+                {
+                    this.geoObjectTypesRepository = new GenericRepository<GeoObjectType>(context);
+                }
+                return geoObjectTypesRepository;
             }
         }
 
@@ -42,7 +54,6 @@ namespace KraevedAPI.DAL
         {
             get
             {
-
                 if (this.imageObjectsRepository == null)
                 {
                     this.imageObjectsRepository = new GenericRepository<ImageObject>(context);

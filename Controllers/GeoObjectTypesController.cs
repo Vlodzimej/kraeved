@@ -6,25 +6,25 @@ namespace KraevedAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GeoObjectsController : ControllerBase
+    public class GeoObjectTypesController : ControllerBase
     {
         private readonly IKraevedService _kraevedService;
-        public GeoObjectsController(IKraevedService kraevedService)
+        public GeoObjectTypesController(IKraevedService kraevedService)
         {
             _kraevedService = kraevedService;
         }
 
         /// <summary>
-        /// Получить гео-объект по индектификатору
+        /// Получить тип гео-объекта по индектификатору
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<GeoObject?>> GetGeoObjectById(int id)
+        public async Task<ActionResult<GeoObjectType?>> GetGeoObjectTypeById(int id)
         {
-            GeoObject? result = null;
+            GeoObjectType? result = null;
             try {
-                result = await _kraevedService.GetGeoObjectById(id);
+                result = await _kraevedService.GetGeoObjectTypeById(id);
             }
             catch(Exception ex) {
                 return BadRequest(new { ex.Message });
@@ -34,19 +34,18 @@ namespace KraevedAPI.Controllers
         }
 
         /// <summary>
-        /// Получить список гео-объектов по фильтру
+        /// Получить список типов гео-объектов по фильтру
         /// </summary>
         /// <param name="name"></param>
         /// <param name="regionId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GeoObjectBrief>>> GetGeoObjects([FromQuery] string? name, [FromQuery] int? regionId) 
+        public async Task<ActionResult<IEnumerable<GeoObjectType>>> GetAllGeoObjectTypes() 
         {
-            IEnumerable<GeoObjectBrief>? result;
-            var filter = new GeoObjectFilter() { Name = name, RegionId = regionId };
+            IEnumerable<GeoObjectType>? result;
 
             try {
-                result = await _kraevedService.GetGeoObjectsByFilter(filter);
+                result = await _kraevedService.GetAllGeoObjectTypes();
             }
 
             catch(Exception ex) {
@@ -62,12 +61,12 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> InsertGeoObject(GeoObject geoObject)
+        public async Task<ActionResult> InsertGeoObjectType(GeoObjectType geoObjectType)
         {
-            GeoObject? result;
+            GeoObjectType? result = null;
 
             try {
-                result = await _kraevedService.InsertGeoObject(geoObject);
+                result = await _kraevedService.InsertGeoObjectType(geoObjectType);
             }
 
             catch(Exception ex) {
@@ -83,12 +82,12 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteGeoObject(int id)
+        public async Task<ActionResult> DeleteGeoObjectType(int id)
         {
-            GeoObject? result = null;
+            GeoObjectType? result = null;
 
             try {
-                result = await _kraevedService.DeleteGeoObject(id);
+                result = await _kraevedService.DeleteGeoObjectType(id);
             }
 
             catch(Exception ex) {
@@ -104,12 +103,12 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<ActionResult> UpdateGeoObject([FromBody]GeoObject geoObject)
+        public async Task<ActionResult> UpdateGeoObjectType([FromBody]GeoObjectType geoObjectType)
         {
-            GeoObject? result = null;
+            GeoObjectType? result = null;
 
             try {
-                result = await _kraevedService.UpdateGeoObject(geoObject);
+                result = await _kraevedService.UpdateGeoObjectType(geoObjectType);
             }
             catch(Exception ex) {
                 return BadRequest(new { ex.Message });

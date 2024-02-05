@@ -10,12 +10,14 @@ namespace KraevedAPI.Service
         /// </summary>
         /// <param name="id">Идентификатор гео-объекта</param>
         /// <returns></returns>
-        public Task<GeoObject> GetGeoObjectById(int id)
+        public Task<GeoObject?> GetGeoObjectById(int id)
         {
-            var result = _unitOfWork.GeoObjectsRepository.GetByID(id) ?? 
-                throw new Exception(ServiceConstants.Exception.NotFound);
+            var filter = new GeoObjectFilter() { Id = id };
+            var result = _unitOfWork.GeoObjectsRepository
+                .Get(x => filter.Id == null || x.Id == filter.Id, includeProperties: "Type")
+                ?? throw new Exception(ServiceConstants.Exception.UnknownError);
 
-            return Task.FromResult(result);
+            return Task.FromResult(result.FirstOrDefault());
         }
 
         /// <summary>
@@ -31,7 +33,8 @@ namespace KraevedAPI.Service
                     (filter.Name == null || x.Name.ToLower().Contains(filter.Name.ToLower())) && 
                     (filter.RegionId == null || (filter.RegionId == x.RegionId)),                         
                     x => x.OrderBy(item => item.Name))
-                .Select(_mapper.Map<GeoObjectBrief>) ?? throw new Exception(ServiceConstants.Exception.UnknownError);
+                .Select(_mapper.Map<GeoObjectBrief>) ?? 
+                    throw new Exception(ServiceConstants.Exception.UnknownError);
 
             return Task.FromResult(result);
         }
@@ -43,17 +46,35 @@ namespace KraevedAPI.Service
         /// <returns></returns>
         public async Task<GeoObject> InsertGeoObject(GeoObject geoObject)
         {
+            if (geoObject.TypeId == null) {
+                throw new Exception(ServiceConstants.Exception.GeoObjectTypeIsNull);
+            } 
+
             Validate(geoObject);
+            
             var filter = new GeoObjectFilter() { Name = geoObject.Name, RegionId = geoObject.RegionId };
             var existedGeoObjectList = await GetGeoObjectsByFilter(filter);
             if (existedGeoObjectList.FirstOrDefault() != null) {
                 throw new Exception(ServiceConstants.Exception.ObjectExists);
             }
+
+            var type = _unitOfWork.GeoObjectTypesRepository.GetByID(geoObject.TypeId);
+
+            if (type == null) {
+                throw new Exception(ServiceConstants.Exception.GeoObjectTypeNotFound);
+            }
+
+            var newGeoObject = new GeoObject() {
+                Name = geoObject.Name,
+                Type = type,
+                Description = geoObject.Description,
+                ShortDescription = geoObject.ShortDescription,
+            };
      
             _unitOfWork.GeoObjectsRepository.Insert(geoObject);
             await _unitOfWork.SaveAsync();
 
-            var newGeoObject = _unitOfWork.GeoObjectsRepository
+            var insertedGeoObject = _unitOfWork.GeoObjectsRepository
                 .Get(x => 
                     (x.Name == geoObject.Name) && 
                     (x.Latitude == geoObject.Latitude) && 
@@ -61,7 +82,7 @@ namespace KraevedAPI.Service
                     (x.Description == geoObject.Description))
                 .FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.CreatedObjectNotFound);
 
-            return newGeoObject;
+            return insertedGeoObject;
         }
 
         /// <summary>

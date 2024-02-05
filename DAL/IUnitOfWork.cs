@@ -7,6 +7,7 @@ namespace KraevedAPI.DAL
     {
         GenericRepository<GeoObject> GeoObjectsRepository { get; }
         GenericRepository<HistoricalEvent> HistoricalEventsRepository { get; }
+        GenericRepository<GeoObjectType> GeoObjectTypesRepository { get; }
         GenericRepository<ImageObject> ImageObjectsRepository { get; }
 
         void Save();

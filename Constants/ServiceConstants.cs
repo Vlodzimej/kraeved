@@ -11,6 +11,8 @@
             public const string UnknownError = "Unknown error";
             public const string ObjectEqualsNull = "Object equals null";
             public const string ObjectExists = "Object exists";
+            public const string GeoObjectTypeNotFound = "GeoObjectType not found";
+            public const string GeoObjectTypeIsNull = "GeoObjectType is null";
         }
     }
 }

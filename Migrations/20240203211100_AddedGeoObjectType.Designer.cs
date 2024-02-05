@@ -3,6 +3,7 @@ using System;
 using KraevedAPI.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,16 +11,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KraevedAPI.Migrations
 {
     [DbContext(typeof(KraevedContext))]
-    partial class KraevedContextModelSnapshot : ModelSnapshot
+    [Migration("20240203211100_AddedGeoObjectType")]
+    partial class AddedGeoObjectType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
 
             modelBuilder.Entity("KraevedAPI.Models.GeoObject", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -50,7 +53,7 @@ namespace KraevedAPI.Migrations
                     b.Property<string>("ThumbnailUrl")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("TypeId")
+                    b.Property<int>("TypeId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -58,25 +61,6 @@ namespace KraevedAPI.Migrations
                     b.HasIndex("TypeId");
 
                     b.ToTable("GeoObjects");
-                });
-
-            modelBuilder.Entity("KraevedAPI.Models.GeoObjectType", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GeoObjectType");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.HistoricalEvent", b =>
@@ -132,11 +116,32 @@ namespace KraevedAPI.Migrations
                     b.ToTable("ImageObjects");
                 });
 
+            modelBuilder.Entity("kraeved.Models.GeoObject.GeoObjectType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GeoObjectType");
+                });
+
             modelBuilder.Entity("KraevedAPI.Models.GeoObject", b =>
                 {
-                    b.HasOne("KraevedAPI.Models.GeoObjectType", "Type")
+                    b.HasOne("kraeved.Models.GeoObject.GeoObjectType", "Type")
                         .WithMany()
-                        .HasForeignKey("TypeId");
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Type");
                 });

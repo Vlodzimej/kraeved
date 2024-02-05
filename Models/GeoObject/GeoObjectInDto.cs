@@ -1,26 +1,17 @@
-﻿namespace KraevedAPI.Models
+namespace KraevedAPI.Models
 {
-    /// <summary>
-    /// Географический объект
-    /// </summary>
-    public class GeoObject
+    public class GeoObjectInDto
     {
-        /// <summary>
-        /// Идентификатор
-        /// </summary>
-        public int? Id { get; set; }
-
         /// <summary>
         /// Название
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
         /// <summary>
-        /// Тип локации
+        /// Идентификатор типа локации
         /// </summary>
         /// <value></value>
-        public GeoObjectType? Type { get; set; }
-        public int? TypeId { get; set; }
+        public required int TypeId { get; set; }
 
         /// <summary>
         /// Описание

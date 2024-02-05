@@ -35,14 +35,14 @@ namespace KraevedAPI.Controllers
             return Ok(result);
         }
 
-                /// <summary>
+        /// <summary>
         /// Получить список событий по фильтру
         /// </summary>
         /// <param name="name"></param>
         /// <param name="regionId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HistoricalEvent>>> GetHistoricalEvents([FromQuery] string? name, [FromQuery] DateTime? date) 
+        public async Task<ActionResult<IEnumerable<HistoricalEventBrief>>> GetHistoricalEvents([FromQuery] string? name, [FromQuery] DateTime? date) 
         {
             IEnumerable<HistoricalEventBrief>? result;
             var filter = new HistoricalEventFilter() { Name = name, Date = date };
