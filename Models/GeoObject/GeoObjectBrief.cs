@@ -26,7 +26,7 @@
         /// 
         /// </summary>
         /// <value></value>
-        public GeoObjectType? Type { get; set; }
+        public string? Type { get; set; }
 
         /// <summary>
         /// Широта

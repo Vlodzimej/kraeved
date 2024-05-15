@@ -13,6 +13,9 @@
             public const string ObjectExists = "Object exists";
             public const string GeoObjectTypeNotFound = "GeoObjectType not found";
             public const string GeoObjectTypeIsNull = "GeoObjectType is null";
+            public const string FileIsEmpty = "File is empty";
+            public const string WrongExtension = "Extension is not allowed";
+
         }
     }
 }
