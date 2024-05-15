@@ -54,6 +54,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseMiddleware<ResponseWrapperMiddleware>();
+app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api/Images/filename"), appBuilder =>
+{
+    appBuilder.UseMiddleware<ResponseWrapperMiddleware>();
+});
 
 app.Run();

@@ -1,5 +1,6 @@
 using KraevedAPI.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace KraevedAPI.Controllers
 {
@@ -10,7 +11,7 @@ namespace KraevedAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<String>?> UploadImage(IFormFile imageFile) {
             string newFileName;
-            
+
             try {
                 if (imageFile.Length == 0) {
                     throw new Exception(ServiceConstants.Exception.FileIsEmpty);
@@ -43,6 +44,18 @@ namespace KraevedAPI.Controllers
             }
 
             return Ok(new { newFileName });
+        }
+
+        [HttpGet("filename/{filename}")]
+        public async Task<ActionResult<String>?> DownloadImage(string filename) {
+            var rootFolder = Directory.GetCurrentDirectory();
+            var path = Path.Combine(rootFolder, "images");
+
+            var filepath = Path.Combine(path, filename); 
+            new FileExtensionContentTypeProvider().TryGetContentType(Path.GetFileName(filepath), out var contentType);
+            var fileContents = await System.IO.File.ReadAllBytesAsync(filepath);
+
+            return File(fileContents, contentType ?? "application/octet-stream", Path.GetFileName(filepath));
         }
     }
 }
