@@ -42,6 +42,6 @@
         /// Миниатюрное изображение
         /// </summary>
         /// <value></value>
-        public string? ThumbnailUrl { get; set; } 
+        public string? Thumbnail { get; set; } 
     }
 }

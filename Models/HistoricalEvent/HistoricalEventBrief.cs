@@ -23,6 +23,6 @@ namespace KraevedAPI.Models
         /// <summary>
         /// Миниатюрное изображение
         /// </summary>
-        public string ThumbnailUrl { get; set; } = string.Empty;
+        public string Thumbnail { get; set; } = string.Empty;
     }
 }

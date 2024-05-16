@@ -83,8 +83,8 @@ namespace KraevedAPI.Service
             existingHistoricalObject.Name = historicalEvent.Name;
             existingHistoricalObject.Date = historicalEvent.Date;
             existingHistoricalObject.Description = historicalEvent.Description;
-            existingHistoricalObject.ImageUrls = historicalEvent.ImageUrls;
-            existingHistoricalObject.ThumbnailUrl = historicalEvent.ThumbnailUrl;
+            existingHistoricalObject.Images = historicalEvent.Images;
+            existingHistoricalObject.Thumbnail = historicalEvent.Thumbnail;
             _unitOfWork.HistoricalEventsRepository.Update(existingHistoricalObject);
             await _unitOfWork.SaveAsync();
 

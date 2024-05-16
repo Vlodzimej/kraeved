@@ -39,12 +39,12 @@ namespace KraevedAPI.Models
         /// Список изображений
         /// </summary>
         /// <value></value>
-        public List<string> ImageUrls { get; set; } = [];
+        public List<string> Images { get; set; } = [];
 
         /// <summary>
         /// Миниатюрное изображение
         /// </summary>
         /// <value></value>
-        public string ThumbnailUrl { get; set; } = string.Empty;
+        public string Thumbnail { get; set; } = string.Empty;
     }
 }
