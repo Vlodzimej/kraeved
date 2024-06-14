@@ -108,7 +108,7 @@ namespace KraevedAPI.Migrations
 
                     b.Property<string>("Thumbnail")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT"); 
 
                     b.HasKey("Id");
 

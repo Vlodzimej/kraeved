@@ -112,11 +112,17 @@ namespace KraevedAPI.Service
                 throw new Exception(ServiceConstants.Exception.NotFound);
             Validate(existingGeoObject);
 
+            var type = _unitOfWork.GeoObjectTypesRepository.Get(x => geoObject.TypeId == x.Id).FirstOrDefault();
+
             existingGeoObject.Name = geoObject.Name;
+            existingGeoObject.ShortDescription = geoObject.ShortDescription;
             existingGeoObject.Description = geoObject.Description;
             existingGeoObject.Longitude = geoObject.Longitude;
             existingGeoObject.Latitude = geoObject.Latitude;                
             existingGeoObject.RegionId = geoObject.RegionId;
+            existingGeoObject.Type = type;
+            existingGeoObject.Thumbnail = geoObject.Thumbnail;
+            existingGeoObject.Images = geoObject.Images;
 
             _unitOfWork.GeoObjectsRepository.Update(existingGeoObject);
             await _unitOfWork.SaveAsync();
