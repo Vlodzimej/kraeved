@@ -6,7 +6,7 @@
     <ProjectGuid>3d518fa2-27e0-496d-9a10-c1c0e2eecb84</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-    <DockerServiceName>kraevedapi</DockerServiceName>
+    <DockerServiceName>kraeved</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
@@ -14,6 +14,6 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
-    <None Include="KraevedAPI/Dockerfile" />
+    <None Include="Dockerfile" />
   </ItemGroup>
 </Project>

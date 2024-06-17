@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  kraevedapi:
+  kraeved:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:44392;http://+:80
@@ -17,8 +17,8 @@ services:
     image: nginx:latest
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./KraevedAPI/cert.crt:/etc/nginx/cert.crt
-      - ./KraevedAPI/cert.rsa:/etc/nginx/cert.rsa
+      - ./cert.crt:/etc/nginx/cert.crt
+      - ./cert.rsa:/etc/nginx/cert.rsa
     ports:
       - "5001:44392"
 
