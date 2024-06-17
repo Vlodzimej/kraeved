@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  kraeved:
+  api:
     image: ${DOCKER_REGISTRY-}kraeved
     build:
       context: .

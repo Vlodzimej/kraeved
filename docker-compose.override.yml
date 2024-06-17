@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  kraeved:
+  api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:44392;http://+:80
@@ -10,7 +10,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     ports:
       - "59404:80"
-      - "44392:44392"
+      - "44392:8080"
     volumes:
       - ~/.aspnet/https:/https:ro
   proxy:
