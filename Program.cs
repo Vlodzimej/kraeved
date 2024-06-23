@@ -5,7 +5,6 @@ using KraevedAPI.DAL;
 using KraevedAPI.Helpers;
 using KraevedAPI.Service;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 //CultureInfo.CurrentCulture = new CultureInfo("ru-RU", false);
 
@@ -48,7 +47,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 
