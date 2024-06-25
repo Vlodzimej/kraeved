@@ -1,0 +1,1 @@
+sudo dotnet publish kraeved.csproj -o /var/www/kraeved
