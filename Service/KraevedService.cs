@@ -7,11 +7,13 @@ namespace KraevedAPI.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public KraevedService(IUnitOfWork unitOfWork, IMapper mapper)
+        public KraevedService(IUnitOfWork unitOfWork, IMapper mapper, IHttpClientFactory httpClientFactory)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _httpClientFactory = httpClientFactory;
         }
 
         #region IDisposable

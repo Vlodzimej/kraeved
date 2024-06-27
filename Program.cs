@@ -29,6 +29,8 @@ builder.Services.AddDbContext<KraevedContext>(
     )
 );
 
+builder.Services.AddHttpClient();
+
 // Auto Mapper Configurations
 var mappingConfig = new MapperConfiguration(cfg =>
 {
