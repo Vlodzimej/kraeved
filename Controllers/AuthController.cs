@@ -15,8 +15,8 @@ namespace KraevedAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login(LoginDto loginDto) {
-            User? result = null;
+        public async Task<ActionResult> Login([FromBody] LoginInDto loginDto) {
+            LoginOutDto? result = null;
 
             try {
                 result = await _kraevedService.Login(loginDto);

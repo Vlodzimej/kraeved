@@ -1,11 +1,13 @@
 ﻿using KraevedAPI.Models;
 using KraevedAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KraevedAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GeoObjectTypesController : ControllerBase
     {
         private readonly IKraevedService _kraevedService;

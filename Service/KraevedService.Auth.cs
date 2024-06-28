@@ -1,5 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using KraevedAPI.Constants;
 using KraevedAPI.Models;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 
 namespace KraevedAPI.Service
@@ -13,21 +17,47 @@ namespace KraevedAPI.Service
         /// <returns></returns>
         public async Task<Boolean> SendSms(string phone)
         {
+            // Проверяем номер телефона
+            if (!VerifyPhone(phone))
+            {
+                throw new Exception(ServiceConstants.Exception.InvalidPhoneNumber);
+            }
+
+            // Ищем коды подтверждения по номеру телефона
+            var oldSmsCodes = _unitOfWork.SmsCodesRepository.Get(x => x.Phone == phone) ?? throw new Exception(ServiceConstants.Exception.UnknownError);
+
+            // Проверяем, что за последние 5 минут не было создано более 4 кодов подтверждения
+            if (oldSmsCodes.Where(x => x.StartDate > DateTime.Now.AddMinutes(-5)).Count() > 4)
+            {
+                throw new Exception(ServiceConstants.Exception.ManyLoginAttempts);
+            }
+
+            // Выставляем просроченный статус для старых кодов
+            foreach (var oldSmsCode in oldSmsCodes) {
+                oldSmsCode.IsInvalid = true;
+                _unitOfWork.SmsCodesRepository.Update(oldSmsCode);
+            }
+            await _unitOfWork.SaveAsync();
+
+            // Создаем новый код подтверждения
             var random = new Random();
             var smsCode = random.Next(100000, 999999);
 
-            var smsCodeEntry = new SmsCode() {
-                Phone = phone, 
-                Code = smsCode.ToString(), 
+            var smsCodeEntry = new SmsCode()
+            {
+                Phone = phone,
+                Code = smsCode.ToString(),
                 StartDate = DateTime.Now
             };
 
+            // Сохраняем новый код подтверждения
             _unitOfWork.SmsCodesRepository.Insert(smsCodeEntry);
             await _unitOfWork.SaveAsync();
 
-            var apiKey = "MJ6BR436N7IW5VX97R1JIM36CO8N548L0ZOJ755X6127X0E3EJ9789YU50CMAYU";
-            var url = $"https://smspilot.ru/api.php?send={smsCode}&to={phone}&apikey={apiKey}&debug=amel-07@mail.ru&test=1";
-            //var url = $"https://smspilot.ru/api.php?balance=rur&apikey={apiKey}";
+            // Отправляем код подтверждения на номер телефона
+            var apiKey = _configuration.GetSection("Kraeved:SmsPilotApiKey").Value;
+            var smsServiceUrl = _configuration.GetSection("ConnectionStrings:SmsService").Value;
+            var url = $"{smsServiceUrl}&send={smsCode}&to={phone}&apikey={apiKey}";
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url)
             {
@@ -38,33 +68,90 @@ namespace KraevedAPI.Service
                 }
             };
 
-            // var httpClient = _httpClientFactory.CreateClient();
-            // var httpResponse = await httpClient.SendAsync(httpRequestMessage);
+            var httpClient = _httpClientFactory.CreateClient();
+            var httpResponse = await httpClient.SendAsync(httpRequestMessage);
 
-            
-            // if (httpResponse.IsSuccessStatusCode)
-            // {
-            //     var contentString = await httpResponse.Content.ReadAsStringAsync();
-            //     return true;
-            // } 
-            return false;
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            throw new Exception(ServiceConstants.Exception.SmsServiceError);
+        }
+
+        public async Task<LoginOutDto> Login(LoginInDto loginDto) {
+            var phone = loginDto.Phone;
+            var code = loginDto.Code;
+            var password = loginDto.Password;
+
+            if(!VerifyPhone(phone)) {
+                throw new Exception(ServiceConstants.Exception.InvalidPhoneNumber);
+            }
+
+            if(VerifyCode(code)) {
+                return await LoginByCode(phone, code);
+            } else if(password!= null) { 
+                return await LoginByPassword(phone, password);
+            }
+
+            throw new Exception(ServiceConstants.Exception.AuthorisationError);
         }
 
         /// <summary>
         /// Вход в систему
         /// </summary>
         /// <param name="loginDto">Данные для входа</param>
-        public async Task<User> Login(LoginDto loginDto) {
-            var smsCode = _unitOfWork.SmsCodesRepository.Get(x => x.Phone == loginDto.Phone && x.Code == loginDto.Code);
+        private async Task<LoginOutDto> LoginByCode(string phone, string code)
+        {
+            var smsCode = _unitOfWork.SmsCodesRepository
+                .Get(x => x.Phone == phone &&
+                          x.Code == code &&
+                          x.StartDate > DateTime.Now.AddMinutes(-5) &&
+                          x.IsInvalid == false)
+               .FirstOrDefault();
 
-            if (smsCode.Count() == 0) {
-                throw new Exception(ServiceConstants.Exception.NotFound);
+            if (smsCode == null)
+            {
+                throw new Exception(ServiceConstants.Exception.InvalidSmsCode);
             }
 
-            removeSmsCodesOfUser();
-            
-            var user = _unitOfWork.UsersRepository.Get(x => x.Phone == loginDto.Phone).FirstOrDefault() ?? await createUser(loginDto.Phone);
-            return user;
+            removeSmsCodesByPhone(phone);
+
+            var password = Guid.NewGuid().ToString() ?? throw new Exception(ServiceConstants.Exception.UnknownError);
+
+            var user = _unitOfWork.UsersRepository
+                .Get(x => x.Phone == phone)
+                .FirstOrDefault() ?? await CreateUser(phone, password);
+
+            _ = UpdateUserPassword(user.Id, password);
+                
+            var loginOutDto = new LoginOutDto()
+            {
+                Password = password
+            };
+
+            return loginOutDto;
+        }
+
+        private async Task<LoginOutDto> LoginByPassword(string phone, string password) {
+            if (!VerifyPhone(phone))
+            {
+                throw new Exception(ServiceConstants.Exception.InvalidPhoneNumber);
+            }
+
+            var user = _unitOfWork.UsersRepository.Get(x => x.Phone == phone).FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
+
+            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt)) {
+                throw new Exception(ServiceConstants.Exception.InvalidPassword); 
+            }
+
+            var loginOutDto = new LoginOutDto()
+            {
+                Token = GetToken(user.Id)
+            };
+
+            return await Task.FromResult(loginOutDto);
         }
 
         /// <summary>
@@ -72,11 +159,17 @@ namespace KraevedAPI.Service
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        private async Task<User> createUser(String phone) {
-            var user = new User() {
+        private async Task<User> CreateUser(String phone, String password)
+        {
+            var (passwordHash, passwordSalt) = GeneratePasswordHash(password);
+            var user = new User()
+            {
                 Phone = phone,
                 Name = "",
-                Surname = ""
+                Surname = "",
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                StartDate = DateTime.Now
             };
 
             _unitOfWork.UsersRepository.Insert(user);
@@ -88,12 +181,136 @@ namespace KraevedAPI.Service
         /// Удаление всех кодов подтверждения пользователя, которые были созданы более 5 минут назад
         /// </summary>
         /// <returns></returns>
-        private async void removeSmsCodesOfUser() {
-            var smsCodes = _unitOfWork.SmsCodesRepository.Get(x => x.StartDate < DateTime.Now.AddMinutes(-5));
-            foreach (var smsCode in smsCodes) {
+        private async void removeSmsCodesByPhone(string phone)
+        {
+            var smsCodes = _unitOfWork.SmsCodesRepository.Get(x => x.Phone == phone);
+            foreach (var smsCode in smsCodes)
+            {
                 _unitOfWork.SmsCodesRepository.Delete(smsCode.Id);
             }
             await _unitOfWork.SaveAsync();
         }
+
+        private string GetToken(int userId) {
+            var secretKey = _configuration.GetSection("Kraeved:Secret").Value;
+            //var role = _genealogyService.GetRoleById(user.RoleId.Value);
+            if (secretKey == null || secretKey == "")
+            {
+                throw new Exception(ServiceConstants.Exception.InvalidSecretKey);
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(secretKey);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, userId.ToString() as string),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, "admin"),
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return tokenString;
+        }
+
+        public UserInfo GetCurrentUser()
+        {
+            var userId = _httpContextAccessor.HttpContext.User.Identity.Name ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
+            var user = _unitOfWork.UsersRepository.GetByID(int.Parse(userId)) ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
+            var userInfo = _mapper.Map<User, UserInfo>(user);
+
+            return userInfo;
+        }
+
+        /// <summary>
+        /// Создание хэша пароля
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="passwordHash"></param>
+        /// <param name="passwordSalt"></param>
+        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            if (password == null) throw new ArgumentNullException(nameof(password));
+            if (string.IsNullOrWhiteSpace(password)) throw new Exception(ServiceConstants.Exception.PasswordErrorSpaces);
+
+            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
+        }
+
+        /// <summary>
+        /// Верификация хэша пароля
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="storedHash"></param>
+        /// <param name="storedSalt"></param>
+        /// <returns></returns>
+        private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
+        {
+            if (password == null)
+                throw new ArgumentNullException("password");
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException(ServiceConstants.Exception.EmptyStringValue, nameof(password));
+            if (storedHash.Length != 64)
+                throw new ArgumentException(ServiceConstants.Exception.InvalidPassword);
+            if (storedSalt.Length != 128)
+                throw new ArgumentException(ServiceConstants.Exception.InvalidPassword);
+
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
+            {
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                for (int i = 0; i < computedHash.Length; i++)
+                {
+                    if (computedHash[i] != storedHash[i]) return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static (byte[] passwordHash, byte[] passwordSalt) GeneratePasswordHash(string password) {
+            byte[] passwordHash, passwordSalt;
+            CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+            return (passwordHash, passwordSalt);
+        }
+
+        private async Task<User> UpdateUserPassword(int id, string password) {
+            var user = _unitOfWork.UsersRepository.GetByID(id) ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
+            var (passwordHash, passwordSalt) = GeneratePasswordHash(password);
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+
+            _unitOfWork.UsersRepository.Update(user);
+            await _unitOfWork.SaveAsync();
+
+            return user;
+        }
+
+        private Boolean VerifyPhone(string? phone) {
+            if (phone == null)
+            {
+                return false;
+            }
+            return phone.Trim().Length == 11;
+        }
+
+        private Boolean VerifyCode(string? code) {
+            if (code == null)
+            {
+                return false;
+            }
+            return code.Trim().Length == 6;
+        }
+        
     }
 }

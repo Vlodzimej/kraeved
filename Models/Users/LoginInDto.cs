@@ -1,10 +1,13 @@
-namespace KraevedAPI.Models {
-    
+namespace KraevedAPI.Models
+{
+
     /// <summary>
     /// Данные для входа в систему.
     /// </summary>
-    public class LoginDto {
+    public class LoginInDto 
+    {
         public required string Phone { get; set; }
         public string? Code { get; set; }
+        public string? Password { get; set; }
     }
 }
