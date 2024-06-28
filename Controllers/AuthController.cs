@@ -1,9 +1,10 @@
+using KraevedAPI.Models;
 using KraevedAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KraevedAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -12,12 +13,28 @@ namespace KraevedAPI.Controllers
         {
             _kraevedService = kraevedService;
         }
-        [HttpPost]
-        public async Task<ActionResult> SendSms(String message)
-        {
-            String? result = null;
+
+        [HttpPost("login")]
+        public async Task<ActionResult> Login(LoginDto loginDto) {
+            User? result = null;
+
             try {
-                result = await _kraevedService.SendSms(message);
+                result = await _kraevedService.Login(loginDto);
+            }
+
+            catch(Exception ex) {
+                return BadRequest(new { ex.Message });
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> SendSms(String phone)
+        {
+            Boolean? result = null;
+            try {
+                result = await _kraevedService.SendSms(phone);
             }
 
             catch(Exception ex) {

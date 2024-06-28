@@ -62,6 +62,35 @@ namespace KraevedAPI.DAL
             }
         }
 
+        private GenericRepository<User>? usersRepository;
+
+        public GenericRepository<User> UsersRepository
+        {
+            get
+            {
+                if (this.usersRepository == null)
+                {
+                    this.usersRepository = new GenericRepository<User>(context);
+                }
+                return usersRepository;
+            }
+        }
+
+
+        private GenericRepository<SmsCode>? smsCodesRepository;
+
+        public GenericRepository<SmsCode> SmsCodesRepository
+        {
+            get
+            {
+                if (this.smsCodesRepository == null)
+                {
+                    this.smsCodesRepository = new GenericRepository<SmsCode>(context);
+                }
+                return smsCodesRepository;
+            }
+        }
+
         public UnitOfWork(KraevedContext context)
         {
             this.context = context;
