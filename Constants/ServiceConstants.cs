@@ -5,6 +5,22 @@
     /// </summary>
     public static class ServiceConstants
     {
+        public static class Authentication {
+            public const int PhoneLength = 10;
+            public const int CodeLength = 4;
+            public const int MaxSmsCodeAttempts = 5;
+            public const int MaxLoginAttempts = 3;
+            public const int SmsCodeTimeout = 5;
+        }
+        public static class Status {
+            public const string Active = "active";
+            public const string Inactive = "inactive";
+        }
+
+        public static class Role {
+            public const string Admin = "admin";
+            public const string User = "user";
+        }
         public static class Exception {
             public const string NotFound = "Not found";
             public const string CreatedObjectNotFound = "Created object not found";

@@ -27,7 +27,8 @@ namespace KraevedAPI.Service
             var oldSmsCodes = _unitOfWork.SmsCodesRepository.Get(x => x.Phone == phone) ?? throw new Exception(ServiceConstants.Exception.UnknownError);
 
             // Проверяем, что за последние 5 минут не было создано более 4 кодов подтверждения
-            if (oldSmsCodes.Where(x => x.StartDate > DateTime.Now.AddMinutes(-5)).Count() > 4)
+            if (oldSmsCodes.Where(x => x.StartDate > DateTime.Now.AddMinutes(-ServiceConstants.Authentication.SmsCodeTimeout)).
+                Count() >= ServiceConstants.Authentication.MaxSmsCodeAttempts)
             {
                 throw new Exception(ServiceConstants.Exception.ManyLoginAttempts);
             }
@@ -41,7 +42,7 @@ namespace KraevedAPI.Service
 
             // Создаем новый код подтверждения
             var random = new Random();
-            var smsCode = random.Next(100000, 999999);
+            var smsCode = random.Next(1000, 9999);
 
             var smsCodeEntry = new SmsCode()
             {
@@ -107,7 +108,7 @@ namespace KraevedAPI.Service
             var smsCode = _unitOfWork.SmsCodesRepository
                 .Get(x => x.Phone == phone &&
                           x.Code == code &&
-                          x.StartDate > DateTime.Now.AddMinutes(-5) &&
+                          x.StartDate > DateTime.Now.AddMinutes(-ServiceConstants.Authentication.SmsCodeTimeout) &&
                           x.IsInvalid == false)
                .FirstOrDefault();
 
@@ -301,7 +302,7 @@ namespace KraevedAPI.Service
             {
                 return false;
             }
-            return phone.Trim().Length == 11;
+            return phone.Trim().Length == ServiceConstants.Authentication.PhoneLength;
         }
 
         private Boolean VerifyCode(string? code) {
@@ -309,7 +310,7 @@ namespace KraevedAPI.Service
             {
                 return false;
             }
-            return code.Trim().Length == 6;
+            return code.Trim().Length == ServiceConstants.Authentication.CodeLength;
         }
         
     }
