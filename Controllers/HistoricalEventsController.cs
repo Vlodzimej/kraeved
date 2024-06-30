@@ -22,6 +22,7 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<HistoricalEvent?>> GetGeoHistoricalEventById(int id)
         {
             HistoricalEvent? result = null;
@@ -44,6 +45,7 @@ namespace KraevedAPI.Controllers
         /// <param name="regionId"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<HistoricalEventBrief>>> GetHistoricalEvents([FromQuery] string? name, [FromQuery] DateTime? date) 
         {
             IEnumerable<HistoricalEventBrief>? result;

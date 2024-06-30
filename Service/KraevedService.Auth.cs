@@ -4,7 +4,6 @@ using System.Text;
 using KraevedAPI.Constants;
 using KraevedAPI.Models;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
 
 namespace KraevedAPI.Service
 {
@@ -60,23 +59,24 @@ namespace KraevedAPI.Service
             var smsServiceUrl = _configuration.GetSection("ConnectionStrings:SmsService").Value;
             var url = $"{smsServiceUrl}&send={smsCode}&to={phone}&apikey={apiKey}";
 
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url)
-            {
-                Headers = {
-                    { HeaderNames.Accept, "application/json" },
-                    { HeaderNames.UserAgent, "KraevedAPI/1.0" },
-                    { HeaderNames.AcceptCharset, "utf-8" }
-                }
-            };
+            return true;
+            // var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url)
+            // {
+            //     Headers = {
+            //         { HeaderNames.Accept, "application/json" },
+            //         { HeaderNames.UserAgent, "KraevedAPI/1.0" },
+            //         { HeaderNames.AcceptCharset, "utf-8" }
+            //     }
+            // };
 
-            var httpClient = _httpClientFactory.CreateClient();
-            var httpResponse = await httpClient.SendAsync(httpRequestMessage);
+            // var httpClient = _httpClientFactory.CreateClient();
+            // var httpResponse = await httpClient.SendAsync(httpRequestMessage);
 
 
-            if (httpResponse.IsSuccessStatusCode)
-            {
-                return true;
-            }
+            // if (httpResponse.IsSuccessStatusCode)
+            // {
+            //     return true;
+            // }
 
             throw new Exception(ServiceConstants.Exception.SmsServiceError);
         }
@@ -218,15 +218,6 @@ namespace KraevedAPI.Service
             var tokenString = tokenHandler.WriteToken(token);
 
             return tokenString;
-        }
-
-        public UserInfo GetCurrentUser()
-        {
-            var userId = _httpContextAccessor.HttpContext.User.Identity.Name ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
-            var user = _unitOfWork.UsersRepository.GetByID(int.Parse(userId)) ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
-            var userInfo = _mapper.Map<User, UserInfo>(user);
-
-            return userInfo;
         }
 
         /// <summary>

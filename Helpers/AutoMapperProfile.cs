@@ -15,7 +15,7 @@ namespace KraevedAPI.Helpers
                 )
             );
             CreateMap<HistoricalEvent, HistoricalEventBrief>();
-            CreateMap<User, UserInfo>();
+            CreateMap<User, UserOutDto>();
         }
     }
 }

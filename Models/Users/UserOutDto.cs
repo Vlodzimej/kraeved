@@ -4,7 +4,7 @@ namespace KraevedAPI.Models
     /// <summary>
     /// Пользователь
     /// </summary>
-    public class UserInfo
+    public class UserOutDto
     {
         /// <summary>
         /// Идентификатор пользователя
