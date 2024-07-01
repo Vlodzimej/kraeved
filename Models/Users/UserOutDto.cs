@@ -31,5 +31,10 @@ namespace KraevedAPI.Models
         /// Дата регистрации
         /// </summary>
         public DateTime StartDate { get; set; }
+
+        /// <summary>
+        /// Роль пользователя
+        /// </summary>
+        public required string Role { get; set; }
     }
 }

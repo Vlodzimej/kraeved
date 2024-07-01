@@ -1,5 +1,6 @@
 ﻿using KraevedAPI.DAL.Repository;
 using KraevedAPI.Models;
+using KraevedAPI.Repository;
 
 namespace KraevedAPI.DAL
 {
@@ -11,6 +12,7 @@ namespace KraevedAPI.DAL
         GenericRepository<ImageObject> ImageObjectsRepository { get; }
         GenericRepository<User> UsersRepository { get; }
         GenericRepository<SmsCode> SmsCodesRepository { get; }
+        RolesRepository RolesRepository { get; }
 
         void Save();
         Task SaveAsync();

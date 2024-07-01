@@ -10,7 +10,7 @@ namespace KraevedAPI.Service
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        public Task<UserOutDto> GetCurrentUserInfd()
+        public Task<UserOutDto> GetCurrentUserInfo()
         {
             var user = GetCurrentUser();
             var userInfo = _mapper.Map<User, UserOutDto>(user);
@@ -36,8 +36,11 @@ namespace KraevedAPI.Service
         }
 
         private User GetCurrentUser() {
-            var userId = _httpContextAccessor.HttpContext.User.Identity.Name?? throw new Exception(ServiceConstants.Exception.UserNotFound);
-            var user = _unitOfWork.UsersRepository.GetByID(int.Parse(userId))?? throw new Exception(ServiceConstants.Exception.UserNotFound);
+            var userId = _httpContextAccessor.HttpContext.User.Identity.Name
+                ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
+                
+            var user = _unitOfWork.UsersRepository.Get(x => x.Id == int.Parse(userId), includeProperties: "Role").FirstOrDefault() 
+                ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
 
             return user;
         }

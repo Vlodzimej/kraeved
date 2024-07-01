@@ -149,7 +149,7 @@ namespace KraevedAPI.Service
 
             var loginOutDto = new LoginOutDto()
             {
-                Token = GetToken(user.Id)
+                Token = GetToken(user.Id, user.RoleId)
             };
 
             return await Task.FromResult(loginOutDto);
@@ -163,6 +163,8 @@ namespace KraevedAPI.Service
         private async Task<User> CreateUser(String phone, String password)
         {
             var (passwordHash, passwordSalt) = GeneratePasswordHash(password);
+            var userRole = _unitOfWork.RolesRepository.GetRoleByName(ServiceConstants.Roles.User.Name);
+
             var user = new User()
             {
                 Phone = phone,
@@ -170,7 +172,8 @@ namespace KraevedAPI.Service
                 Surname = "",
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                StartDate = DateTime.Now
+                StartDate = DateTime.Now,
+                RoleId = userRole.Id
             };
 
             _unitOfWork.UsersRepository.Insert(user);
@@ -192,9 +195,10 @@ namespace KraevedAPI.Service
             await _unitOfWork.SaveAsync();
         }
 
-        private string GetToken(int userId) {
+        private string GetToken(int userId, int roleId) {
             var secretKey = _configuration.GetSection("Kraeved:Secret").Value;
-            //var role = _genealogyService.GetRoleById(user.RoleId.Value);
+            var role = _unitOfWork.RolesRepository.GetRoleById(roleId);
+
             if (secretKey == null || secretKey == "")
             {
                 throw new Exception(ServiceConstants.Exception.InvalidSecretKey);
@@ -205,11 +209,11 @@ namespace KraevedAPI.Service
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, userId.ToString() as string),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, "admin"),
-                }),
+                Subject = new ClaimsIdentity(
+                [
+                    new Claim(ClaimTypes.Name, userId.ToString()),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name),
+                ]),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

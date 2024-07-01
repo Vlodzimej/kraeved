@@ -66,6 +66,7 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> InsertGeoObject(GeoObject geoObject)
         {
             GeoObject? result;
@@ -87,6 +88,7 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> DeleteGeoObject(int id)
         {
             GeoObject? result = null;
@@ -108,6 +110,7 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPut]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> UpdateGeoObject([FromBody]GeoObject geoObject)
         {
             GeoObject? result = null;

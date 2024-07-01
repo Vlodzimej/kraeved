@@ -68,6 +68,7 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> InsertHistoricalEvent(HistoricalEvent historicalEvent)
         {
             HistoricalEvent? result = null;
@@ -89,6 +90,7 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> DeleteHistocialEvent(int id)
         {
             HistoricalEvent? result = null;
@@ -110,6 +112,7 @@ namespace KraevedAPI.Controllers
         /// <param name="historicalEvent"></param>
         /// <returns></returns>
         [HttpPatch]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> UpdateHistoricalEvent([FromBody]HistoricalEvent historicalEvent)
         {
             HistoricalEvent? result = null;

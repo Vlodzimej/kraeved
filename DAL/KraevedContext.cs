@@ -14,5 +14,6 @@ namespace KraevedAPI.DAL
         public DbSet<ImageObject> ImageObjects => Set<ImageObject>();
         public DbSet<User> Users => Set<User>();
         public DbSet<SmsCode> SmsCodes => Set<SmsCode>();
+        public DbSet<Role> Roles => Set<Role>();
     }
 }

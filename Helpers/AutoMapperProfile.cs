@@ -15,7 +15,13 @@ namespace KraevedAPI.Helpers
                 )
             );
             CreateMap<HistoricalEvent, HistoricalEventBrief>();
-            CreateMap<User, UserOutDto>();
+            CreateMap<User, UserOutDto>()
+                .ForMember(
+                dest => dest.Role,
+                src => src.MapFrom(
+                    item => item.Role.Name != null ? item.Role.Name : "UNKNOWN"
+                )
+            );
         }
     }
 }

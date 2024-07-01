@@ -45,5 +45,17 @@ namespace KraevedAPI.Models
         /// Дата регистрации
         /// </summary>
         public DateTime StartDate { get; set; }
+
+        /// <summary>
+        /// Идентификтор роли
+        /// </summary>
+        public int RoleId { get; set; }
+
+        /// <summary>
+        /// Роль
+        /// </summary>
+        /// <value></value>
+        [ForeignKey("RoleId")]
+        public Role Role { get; set; }
     }
 }

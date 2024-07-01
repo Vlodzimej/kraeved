@@ -4,7 +4,7 @@ namespace KraevedAPI.Service
 {
     public partial interface IKraevedService
     {
-        Task<UserOutDto> GetCurrentUserInfd();
+        Task<UserOutDto> GetCurrentUserInfo();
         Task<UserOutDto> PatchUser(UserInDto userInDto);
     }
 }

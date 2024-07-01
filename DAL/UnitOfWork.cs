@@ -1,5 +1,6 @@
 ﻿using KraevedAPI.DAL.Repository;
 using KraevedAPI.Models;
+using KraevedAPI.Repository;
 
 namespace KraevedAPI.DAL
 {
@@ -88,6 +89,19 @@ namespace KraevedAPI.DAL
                     this.smsCodesRepository = new GenericRepository<SmsCode>(context);
                 }
                 return smsCodesRepository;
+            }
+        }
+
+        private RolesRepository? rolesRepository;
+        public RolesRepository RolesRepository
+        {
+            get
+            {
+                if (this.rolesRepository == null)
+                {
+                    this.rolesRepository = new RolesRepository(context);
+                }
+                return rolesRepository;
             }
         }
 
