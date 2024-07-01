@@ -1,5 +1,6 @@
 ﻿using KraevedAPI.DAL.Repository;
 using KraevedAPI.Models;
+using KraevedAPI.Repository;
 
 namespace KraevedAPI.DAL
 {
@@ -59,6 +60,48 @@ namespace KraevedAPI.DAL
                     this.imageObjectsRepository = new GenericRepository<ImageObject>(context);
                 }
                 return imageObjectsRepository;
+            }
+        }
+
+        private GenericRepository<User>? usersRepository;
+
+        public GenericRepository<User> UsersRepository
+        {
+            get
+            {
+                if (this.usersRepository == null)
+                {
+                    this.usersRepository = new GenericRepository<User>(context);
+                }
+                return usersRepository;
+            }
+        }
+
+
+        private GenericRepository<SmsCode>? smsCodesRepository;
+
+        public GenericRepository<SmsCode> SmsCodesRepository
+        {
+            get
+            {
+                if (this.smsCodesRepository == null)
+                {
+                    this.smsCodesRepository = new GenericRepository<SmsCode>(context);
+                }
+                return smsCodesRepository;
+            }
+        }
+
+        private RolesRepository? rolesRepository;
+        public RolesRepository RolesRepository
+        {
+            get
+            {
+                if (this.rolesRepository == null)
+                {
+                    this.rolesRepository = new RolesRepository(context);
+                }
+                return rolesRepository;
             }
         }
 

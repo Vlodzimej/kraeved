@@ -3,6 +3,7 @@ using System;
 using KraevedAPI.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KraevedAPI.Migrations
 {
     [DbContext(typeof(KraevedContext))]
-    partial class KraevedContextModelSnapshot : ModelSnapshot
+    [Migration("20240628073016_AddedUsers")]
+    partial class AddedUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -57,7 +60,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("GeoObjects", (string)null);
+                    b.ToTable("GeoObjects");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.GeoObjectType", b =>
@@ -76,7 +79,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GeoObjectType", (string)null);
+                    b.ToTable("GeoObjectType");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.HistoricalEvent", b =>
@@ -109,7 +112,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HistoricalEvents", (string)null);
+                    b.ToTable("HistoricalEvents");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.ImageObject", b =>
@@ -129,47 +132,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ImageObjects", (string)null);
-                });
-
-            modelBuilder.Entity("KraevedAPI.Models.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles", (string)null);
-                });
-
-            modelBuilder.Entity("KraevedAPI.Models.SmsCode", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsInvalid")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SmsCodes", (string)null);
+                    b.ToTable("ImageObjects");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.User", b =>
@@ -182,22 +145,8 @@ namespace KraevedAPI.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("BLOB");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("BLOB");
-
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Surname")
@@ -206,9 +155,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.GeoObject", b =>
@@ -218,22 +165,6 @@ namespace KraevedAPI.Migrations
                         .HasForeignKey("TypeId");
 
                     b.Navigation("Type");
-                });
-
-            modelBuilder.Entity("KraevedAPI.Models.User", b =>
-                {
-                    b.HasOne("KraevedAPI.Models.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("KraevedAPI.Models.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

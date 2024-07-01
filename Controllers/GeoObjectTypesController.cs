@@ -1,11 +1,13 @@
 ﻿using KraevedAPI.Models;
 using KraevedAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KraevedAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GeoObjectTypesController : ControllerBase
     {
         private readonly IKraevedService _kraevedService;
@@ -61,6 +63,7 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> InsertGeoObjectType(GeoObjectType geoObjectType)
         {
             GeoObjectType? result = null;
@@ -82,6 +85,7 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> DeleteGeoObjectType(int id)
         {
             GeoObjectType? result = null;
@@ -103,6 +107,7 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPut]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> UpdateGeoObjectType([FromBody]GeoObjectType geoObjectType)
         {
             GeoObjectType? result = null;

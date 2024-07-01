@@ -11,6 +11,9 @@ namespace KraevedAPI.Service
         /// <param name="id">Идентификатор</param>
         /// <returns></returns>
         public Task<GeoObjectType> GetGeoObjectTypeById(int id) {
+
+            var currentUser = GetCurrentUser();
+
             var geoObjectType = _unitOfWork.GeoObjectTypesRepository.GetByID(id) ?? 
                 throw new Exception(ServiceConstants.Exception.NotFound);
             

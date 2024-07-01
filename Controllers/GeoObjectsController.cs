@@ -1,11 +1,13 @@
 ﻿using KraevedAPI.Models;
 using KraevedAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KraevedAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GeoObjectsController : ControllerBase
     {
         private readonly IKraevedService _kraevedService;
@@ -20,6 +22,7 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<GeoObject?>> GetGeoObjectById(int id)
         {
             GeoObject? result = null;
@@ -40,6 +43,7 @@ namespace KraevedAPI.Controllers
         /// <param name="regionId"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<GeoObjectBrief>>> GetGeoObjects([FromQuery] string? name, [FromQuery] int? regionId) 
         {
             IEnumerable<GeoObjectBrief>? result;
@@ -62,6 +66,7 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> InsertGeoObject(GeoObject geoObject)
         {
             GeoObject? result;
@@ -83,6 +88,7 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> DeleteGeoObject(int id)
         {
             GeoObject? result = null;
@@ -104,6 +110,7 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPut]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> UpdateGeoObject([FromBody]GeoObject geoObject)
         {
             GeoObject? result = null;

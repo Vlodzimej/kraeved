@@ -1,10 +1,13 @@
+using System.Text;
 using AutoMapper;
 using KraevedAPI.ClassObjects;
 using KraevedAPI.Core;
 using KraevedAPI.DAL;
 using KraevedAPI.Helpers;
 using KraevedAPI.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 //CultureInfo.CurrentCulture = new CultureInfo("ru-RU", false);
 
@@ -28,6 +31,31 @@ builder.Services.AddDbContext<KraevedContext>(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
+
+builder.Services.AddHttpContextAccessor();
+
+var secretKey = builder.Configuration["Kraeved:Secret"] ?? "";
+var key = Encoding.ASCII.GetBytes(secretKey);
+
+builder.Services.AddAuthentication(opt =>
+{
+	opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+	x.RequireHttpsMetadata = false;
+	x.SaveToken = true;
+	x.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidateIssuerSigningKey = true,
+		IssuerSigningKey = new SymmetricSecurityKey(key),
+		ValidateIssuer = false,
+		ValidateAudience = false
+	};
+});
+
+builder.Services.AddHttpClient();
 
 // Auto Mapper Configurations
 var mappingConfig = new MapperConfiguration(cfg =>

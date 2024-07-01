@@ -3,6 +3,7 @@ using System;
 using KraevedAPI.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KraevedAPI.Migrations
 {
     [DbContext(typeof(KraevedContext))]
-    partial class KraevedContextModelSnapshot : ModelSnapshot
+    [Migration("20240701065624_AddedUserRolesData")]
+    partial class AddedUserRolesData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -57,7 +60,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("GeoObjects", (string)null);
+                    b.ToTable("GeoObjects");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.GeoObjectType", b =>
@@ -76,7 +79,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GeoObjectType", (string)null);
+                    b.ToTable("GeoObjectType");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.HistoricalEvent", b =>
@@ -109,7 +112,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HistoricalEvents", (string)null);
+                    b.ToTable("HistoricalEvents");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.ImageObject", b =>
@@ -129,7 +132,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ImageObjects", (string)null);
+                    b.ToTable("ImageObjects");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.Role", b =>
@@ -144,7 +147,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.SmsCode", b =>
@@ -169,7 +172,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SmsCodes", (string)null);
+                    b.ToTable("SmsCodes");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.User", b =>
@@ -208,7 +211,7 @@ namespace KraevedAPI.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("KraevedAPI.Models.GeoObject", b =>

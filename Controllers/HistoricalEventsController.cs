@@ -1,11 +1,13 @@
 using KraevedAPI.Models;
 using KraevedAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KraevedAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class HistoricalEventsController : ControllerBase
     {
         private readonly IKraevedService _kraevedService;
@@ -20,6 +22,7 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<HistoricalEvent?>> GetGeoHistoricalEventById(int id)
         {
             HistoricalEvent? result = null;
@@ -42,6 +45,7 @@ namespace KraevedAPI.Controllers
         /// <param name="regionId"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<HistoricalEventBrief>>> GetHistoricalEvents([FromQuery] string? name, [FromQuery] DateTime? date) 
         {
             IEnumerable<HistoricalEventBrief>? result;
@@ -64,6 +68,7 @@ namespace KraevedAPI.Controllers
         /// <param name="geoObject"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> InsertHistoricalEvent(HistoricalEvent historicalEvent)
         {
             HistoricalEvent? result = null;
@@ -85,6 +90,7 @@ namespace KraevedAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> DeleteHistocialEvent(int id)
         {
             HistoricalEvent? result = null;
@@ -106,6 +112,7 @@ namespace KraevedAPI.Controllers
         /// <param name="historicalEvent"></param>
         /// <returns></returns>
         [HttpPatch]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> UpdateHistoricalEvent([FromBody]HistoricalEvent historicalEvent)
         {
             HistoricalEvent? result = null;

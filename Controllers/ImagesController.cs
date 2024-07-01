@@ -1,5 +1,6 @@
 using KraevedAPI.Constants;
 using KraevedAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 
@@ -7,6 +8,7 @@ namespace KraevedAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ImagesController : ControllerBase
     {
         private readonly IKraevedService _kraevedService;

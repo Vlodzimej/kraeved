@@ -7,11 +7,17 @@ namespace KraevedAPI.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public KraevedService(IUnitOfWork unitOfWork, IMapper mapper)
+        public KraevedService(IUnitOfWork unitOfWork, IMapper mapper, IHttpClientFactory httpClientFactory, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _httpClientFactory = httpClientFactory;
+            _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #region IDisposable
