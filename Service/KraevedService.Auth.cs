@@ -33,7 +33,8 @@ namespace KraevedAPI.Service
             }
 
             // Выставляем просроченный статус для старых кодов
-            foreach (var oldSmsCode in oldSmsCodes) {
+            foreach (var oldSmsCode in oldSmsCodes)
+            {
                 oldSmsCode.IsInvalid = true;
                 _unitOfWork.SmsCodesRepository.Update(oldSmsCode);
             }
@@ -81,18 +82,23 @@ namespace KraevedAPI.Service
             throw new Exception(ServiceConstants.Exception.SmsServiceError);
         }
 
-        public async Task<LoginOutDto> Login(LoginInDto loginDto) {
+        public async Task<LoginOutDto> Login(LoginInDto loginDto)
+        {
             var phone = loginDto.Phone;
             var code = loginDto.Code;
             var password = loginDto.Password;
 
-            if(!VerifyPhone(phone)) {
+            if (!VerifyPhone(phone))
+            {
                 throw new Exception(ServiceConstants.Exception.InvalidPhoneNumber);
             }
 
-            if(VerifyCode(code)) {
+            if (VerifyCode(code))
+            {
                 return await LoginByCode(phone, code);
-            } else if(password!= null) { 
+            }
+            else if (password != null)
+            {
                 return await LoginByPassword(phone, password);
             }
 
@@ -112,12 +118,15 @@ namespace KraevedAPI.Service
                           x.IsInvalid == false)
                .FirstOrDefault();
 
-            if (smsCode == null)
+            if (!isDevelopment)
             {
-                throw new Exception(ServiceConstants.Exception.InvalidSmsCode);
-            }
+                if (smsCode == null)
+                {
+                    throw new Exception(ServiceConstants.Exception.InvalidSmsCode);
+                }
 
-            removeSmsCodesByPhone(phone);
+                removeSmsCodesByPhone(phone);
+            }
 
             var password = Guid.NewGuid().ToString() ?? throw new Exception(ServiceConstants.Exception.UnknownError);
 
@@ -126,7 +135,7 @@ namespace KraevedAPI.Service
                 .FirstOrDefault() ?? await CreateUser(phone, password);
 
             _ = UpdateUserPassword(user.Id, password);
-                
+
             var loginOutDto = new LoginOutDto()
             {
                 Password = password
@@ -135,7 +144,8 @@ namespace KraevedAPI.Service
             return loginOutDto;
         }
 
-        private async Task<LoginOutDto> LoginByPassword(string phone, string password) {
+        private async Task<LoginOutDto> LoginByPassword(string phone, string password)
+        {
             if (!VerifyPhone(phone))
             {
                 throw new Exception(ServiceConstants.Exception.InvalidPhoneNumber);
@@ -143,8 +153,9 @@ namespace KraevedAPI.Service
 
             var user = _unitOfWork.UsersRepository.Get(x => x.Phone == phone).FirstOrDefault() ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
 
-            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt)) {
-                throw new Exception(ServiceConstants.Exception.InvalidPassword); 
+            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            {
+                throw new Exception(ServiceConstants.Exception.InvalidPassword);
             }
 
             var loginOutDto = new LoginOutDto()
@@ -195,7 +206,8 @@ namespace KraevedAPI.Service
             await _unitOfWork.SaveAsync();
         }
 
-        private string GetToken(int userId, int roleId) {
+        private string GetToken(int userId, int roleId)
+        {
             var secretKey = _configuration.GetSection("Kraeved:Secret").Value;
             var role = _unitOfWork.RolesRepository.GetRoleById(roleId);
 
@@ -272,14 +284,16 @@ namespace KraevedAPI.Service
             return true;
         }
 
-        private static (byte[] passwordHash, byte[] passwordSalt) GeneratePasswordHash(string password) {
+        private static (byte[] passwordHash, byte[] passwordSalt) GeneratePasswordHash(string password)
+        {
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
             return (passwordHash, passwordSalt);
         }
 
-        private async Task<User> UpdateUserPassword(int id, string password) {
+        private async Task<User> UpdateUserPassword(int id, string password)
+        {
             var user = _unitOfWork.UsersRepository.GetByID(id) ?? throw new Exception(ServiceConstants.Exception.UserNotFound);
             var (passwordHash, passwordSalt) = GeneratePasswordHash(password);
 
@@ -292,7 +306,8 @@ namespace KraevedAPI.Service
             return user;
         }
 
-        private Boolean VerifyPhone(string? phone) {
+        private Boolean VerifyPhone(string? phone)
+        {
             if (phone == null)
             {
                 return false;
@@ -300,13 +315,14 @@ namespace KraevedAPI.Service
             return phone.Trim().Length == ServiceConstants.Authentication.PhoneLength;
         }
 
-        private Boolean VerifyCode(string? code) {
+        private Boolean VerifyCode(string? code)
+        {
             if (code == null)
             {
                 return false;
             }
             return code.Trim().Length == ServiceConstants.Authentication.CodeLength;
         }
-        
+
     }
 }
