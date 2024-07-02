@@ -17,10 +17,6 @@
             public const string Inactive = "inactive";
         }
 
-        public static class Role {
-            public const string Admin = "admin";
-            public const string User = "user";
-        }
         public static class Exception {
             public const string NotFound = "Not found";
             public const string CreatedObjectNotFound = "Created object not found";
@@ -83,3 +79,5 @@
         }
     }
 }
+
+
