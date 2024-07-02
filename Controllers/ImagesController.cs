@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.StaticFiles;
 
 namespace KraevedAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class ImagesController : ControllerBase
     {
         private readonly IKraevedService _kraevedService;
@@ -32,6 +32,7 @@ namespace KraevedAPI.Controllers
             return Ok(new { filenames });
         }
 
+        [AllowAnonymous]
         [HttpGet("filename/{filename}")]
         public async Task<ActionResult<String>?> DownloadImage(string filename) {
             var rootFolder = Directory.GetCurrentDirectory();

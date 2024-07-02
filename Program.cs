@@ -34,9 +34,8 @@ builder.Services.AddDbContext<KraevedContext>(
 
 builder.Services.AddHttpContextAccessor();
 
-var secretKey = builder.Configuration["Kraeved:Secret"] ?? builder.Configuration.GetSection("SecretKey").Value;
+var secretKey = builder.Configuration["Kraeved:Secret"] ?? "";
 var key = Encoding.ASCII.GetBytes(secretKey);
-
 builder.Services.AddAuthentication(opt =>
 {
 	opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
